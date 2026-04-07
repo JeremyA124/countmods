@@ -46,4 +46,5 @@ glm_pois <- function(data,
   fit.dat <- as.data.frame(cbind(fit.dat, asymp.CI.lower, asymp.CI.higher, p.vals))
 
   return(fit.dat)
+
 }
