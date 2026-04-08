@@ -1,12 +1,14 @@
+#' @importFrom stats model.frame model.response model.matrix pnorm qnorm
+
 glm_pois <- function(data,
                      formula,
                      offset = log(1)){
 
   #Parameter initliazations
   ##########################
-  par <- model.frame(formula, data=data)
-  log.lambdas <- model.response(par)
-  X <- model.matrix(formula, data=par)
+  par <- stats::model.frame(formula, data=data)
+  log.lambdas <- stats::model.response(par)
+  X <- stats::model.matrix(formula, data=par)
   betas <- matrix(0, nrow=ncol(X),ncol=1)
 
   #IWLS algorithm model fit
@@ -37,8 +39,8 @@ glm_pois <- function(data,
   for(i in 1:nrow(fit.dat)){
     SE <- sqrt(inv.Hess[i,i])
     Zs[i] <- fit.dat$betas[i]/SE
-    p.vals[i] <- 2*(1-pnorm(abs(Zs[i])))
-    crit <- qnorm(0.975)
+    p.vals[i] <- 2*(1-stats::pnorm(abs(Zs[i])))
+    crit <- stats::qnorm(0.975)
     asymp.CI.lower[i] <- fit.dat$betas[i]-crit*SE
     asymp.CI.higher[i] <- fit.dat$betas[i]+crit*SE
   }
