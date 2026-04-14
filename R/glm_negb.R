@@ -29,46 +29,60 @@ glm_negb <- function(data,
                           method = "Brent",
                           neg=T,
                           y=y, lower=0, upper=1000)$par
-    W <- diag(as.vector(pred.means**2/((1/theta)*pred.means**2+pred.means)))
+    tXW <- t(X * as.vector(pred.means))
+    tXWX <- tXW %*% X
     z <- eta+(y-pred.means)/((1/theta)*pred.means**2+pred.means)
-    inv.Hess <- solve(t(X)%*%W%*%X)
-    betas.new <- inv.Hess%*%t(X)%*%W%*%z
+    tXWz <- tXW %*% z
+    betas.new <- solve(tXWX, tXWz)
     ss <- sum((betas.new-betas)**2)
     betas <- betas.new
-    std.error <- sqrt(diag(inv.Hess))
     if(ss < 1e-6){
+      std.error <- sqrt(diag(solve(tXWX)))
       break
     }
   }
 
-  fit.dat <- data.frame(betas=betas,std.error=std.error)
-  print(theta)
+  fit.dat <- list(coefficients=list(betas=as.vector(betas),
+                                    std.error=std.error))
 
   # Coefficient Pvals and Confidence Intervals
   #############################################
-  test.stat <- rep(NA, times = nrow(fit.dat))
-  p.vals <- rep(NA, times = nrow(fit.dat))
-  asymp.CI.lower <- rep(NA, times = nrow(fit.dat))
-  asymp.CI.higher <- rep(NA, times = nrow(fit.dat))
-  for(i in 1:nrow(fit.dat)){
-    SE <- sqrt(inv.Hess[i,i])
-    test.stat[i] <- fit.dat$betas[i]/SE
+  test.stat <- rep(NA, times = length(fit.dat$coefficients))
+  p.vals <- rep(NA, times = length(fit.dat$coefficients))
+  asymp.CI.lower <- rep(NA, times = length(fit.dat$coefficients))
+  asymp.CI.higher <- rep(NA, times = length(fit.dat$coefficients))
+  for(i in 1:length(fit.dat$coefficients)){
+    SE <- std.error[i]
+    test.stat[i] <- fit.dat$coefficients$betas[i]/SE
     p.vals[i] <- 2*(1-stats::pnorm(abs(test.stat[i])))
     crit <- stats::qnorm(0.975)
-    asymp.CI.lower[i] <- fit.dat$betas[i]-crit*SE
-    asymp.CI.higher[i] <- fit.dat$betas[i]+crit*SE
+    asymp.CI.lower[i] <- fit.dat$coefficients$betas[i]-crit*SE
+    asymp.CI.higher[i] <- fit.dat$coefficients$betas[i]+crit*SE
   }
 
-  fit.dat <- data.frame(fit.dat,
-                        Z=test.stat,
-                        asymp.CI.lower=asymp.CI.lower,
-                        asymp.CI.higher=asymp.CI.higher,
-                        p.vals=p.vals)
+  # Model summary/data
+  #####################
+  fit.dat <- c(fit.dat,
+               list(residuals = as.list(y - pred.means),
+                    summary = list(Z=test.stat,
+                                   asymp.CI.lower=asymp.CI.lower,
+                                   asymp.CI.higher=asymp.CI.higher,
+                                   p.vals=p.vals),
+                    fitted.values = as.list(pred.means),
+                    df.residuals = nrow(data)-length(betas),
+                    call = match.call(),
+                    terms = terms(formula),
+                    model = list(y=y, x=X),
+                    theta = theta))
+  names(fit.dat$coefficients$betas) <- names(fit.dat$coefficients$std.error)
+  names(fit.dat$residuals) <- 1:length(fit.dat$residuals)
+  names(fit.dat$fitted.values) <- 1:length(fit.dat$fitted.values)
 
   if (theta>=999){
     warning("Theta diverges, perhaps use a Poisson regression model?")
   }
 
+  class(fit.dat) <- "glm_negb"
   return(fit.dat)
 
 }
