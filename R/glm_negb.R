@@ -74,7 +74,8 @@ glm_negb <- function(data,
                     terms = terms(formula),
                     model = list(y=y, x=X),
                     theta = theta))
-  names(fit.dat$coefficients$betas) <- names(fit.dat$coefficients$std.error)
+  names(fit.dat$coefficients$betas) <- colnames(X)
+  names(fit.dat$coefficients$std.error) <- colnames(X)
   names(fit.dat$residuals) <- 1:length(fit.dat$residuals)
   names(fit.dat$fitted.values) <- 1:length(fit.dat$fitted.values)
 

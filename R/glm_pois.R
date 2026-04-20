@@ -26,9 +26,11 @@ glm_pois <- function(data,
     betas <- betas.new
     if(ss < 1e-6){
       disp.ratio <- sum(((y-pred.means)**2)/pred.means)/(nrow(data)-length(betas))
-      std.error <- ifelse(quasi,
-                          sqrt(disp.ratio*diag(solve(tXWX))),
-                          sqrt(diag(solve(tXWX))))
+      if (quasi) {
+        std.error <- sqrt(disp.ratio * diag(solve(tXWX)))
+      } else {
+        std.error <- sqrt(diag(solve(tXWX)))
+      }
       break
     }
   }
@@ -72,7 +74,8 @@ glm_pois <- function(data,
                     call = match.call(),
                     terms = terms(formula),
                     model = list(y=y, x=X)))
-  names(fit.dat$coefficients$betas) <- names(fit.dat$coefficients$std.error)
+  names(fit.dat$coefficients$betas) <- colnames(X)
+  names(fit.dat$coefficients$std.error) <- colnames(X)
   names(fit.dat$residuals) <- 1:length(fit.dat$residuals)
   names(fit.dat$fitted.values) <- 1:length(fit.dat$fitted.values)
 
