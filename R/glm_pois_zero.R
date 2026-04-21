@@ -95,6 +95,7 @@ glm_pois_zero <- function(data,
                                              p.vals=p.vals.alpha)),
                     fitted.values = as.list((1-pred.zeros)*pred.means),
                     df.residuals = nrow(data)-length(betas)-length(alphas),
+                    pred.zero = as.list(pred.zeros),
                     call = match.call(),
                     terms = list(count=terms(formula.pois),
                                  zero=terms(formula.log)),
@@ -104,6 +105,7 @@ glm_pois_zero <- function(data,
   names(fit.dat$coefficients$zero) <- colnames(X.logit)
   names(fit.dat$residuals) <- 1:length(fit.dat$residuals)
   names(fit.dat$fitted.values) <- 1:length(fit.dat$fitted.values)
+  names(fit.dat$pred.zero) <- 1:length(fit.dat$pred.zero)
 
   class(fit.dat) <- "glm_pois_zero"
   return(fit.dat)

@@ -109,15 +109,18 @@ glm_negb_zero <- function(data,
                                              p.vals=p.vals.alpha)),
                     fitted.values = as.list((1-pred.zeros)*pred.means),
                     df.residuals = nrow(data)-length(betas)-length(alphas),
+                    pred.zero = as.list(pred.zeros),
                     call = match.call(),
                     terms = list(count=terms(formula.negb),
                                  zero=terms(formula.log)),
                     model = list(count=list(y=y, x=X.negb),
-                                 zero=list(y-y, x=X.logit))))
+                                 zero=list(y-y, x=X.logit)),
+                    theta = theta))
   names(fit.dat$coefficients$count) <- colnames(X.negb)
   names(fit.dat$coefficients$zero) <- colnames(X.logit)
   names(fit.dat$residuals) <- 1:length(fit.dat$residuals)
   names(fit.dat$fitted.values) <- 1:length(fit.dat$fitted.values)
+  names(fit.dat$pred.zero) <- 1:length(fit.dat$pred.zero)
 
   if (theta>=999){
     warning("Theta diverges, perhaps use a Poisson regression model?")
