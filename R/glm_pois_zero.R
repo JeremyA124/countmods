@@ -12,7 +12,7 @@ glm_pois_zero <- function(data,
   X.logit <- stats::model.matrix(formula.log, data=par2)
   betas <- matrix(0, nrow=ncol(X.pois), ncol=1)
   alphas <- matrix(0, nrow=ncol(X.logit), ncol=1)
-  pred.means <- offset
+  pred.means <- exp(offset)
 
   #IWLS algorithm model fit
   ##########################
@@ -99,8 +99,7 @@ glm_pois_zero <- function(data,
                     call = match.call(),
                     terms = list(count=terms(formula.pois),
                                  zero=terms(formula.log)),
-                    model = list(count=list(y=y, x=X.pois),
-                                 zero=list(y-y, x=X.logit))))
+                    model = list(y=y, x=X.pois)))
   names(fit.dat$coefficients$count) <- colnames(X.pois)
   names(fit.dat$coefficients$zero) <- colnames(X.logit)
   names(fit.dat$residuals) <- 1:length(fit.dat$residuals)
