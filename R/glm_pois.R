@@ -5,7 +5,7 @@ glm_pois <- function(data,
                      offset = log(1),
                      quasi = F){
 
-  #Parameter initliazations
+  #Parameter initialization
   ##########################
   par <- stats::model.frame(formula, data=data)
   y <- stats::model.response(par)

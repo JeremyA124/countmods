@@ -1,5 +1,10 @@
 mod_compare <- function(mod1, mod2, print.results=T){
 
+  if (!(class(mod1) %in% c("glm_pois", "glm_pois_zero", "glm_negb", "glm_negb_zero")) |
+      !(class(mod2) %in% c("glm_pois", "glm_pois_zero", "glm_negb", "glm_negb_zero"))){
+    stop("Model class not supported")
+  }
+
   dzpois <- function(y, lambda, pi) {
     probs <- numeric(length(y))
     n <- length(y)

@@ -28,7 +28,7 @@ glm_pois_zero <- function(data,
     z.logit <- eta.logit + (delta-pred.zeros)/(pred.zeros*(1-pred.zeros))
     tXWz.logit <- tXW.logit %*% z.logit
     new.alphas <- solve(tXWX.logit, tXWz.logit)
-    ss1 <- sum((new.alphas-alphas)**2)
+    ss1 <- sum((new.alphas-alphas)^2)
     alphas <- new.alphas
     #Poisson Part
     ##############
@@ -36,7 +36,7 @@ glm_pois_zero <- function(data,
     pred.means <- exp(eta)
     tXW.pois <- t(X.pois * as.vector((1-delta)*pred.means))
     tXWX.pois <- tXW.pois %*% X.pois
-    z <- eta+(y-pred.means)/pred.means
+    z <- eta+(y-pred.means)/(pred.means)
     tXWz.pois <- tXW.pois %*% z
     betas.new <- solve(tXWX.pois, tXWz.pois)
     ss2 <- sum((betas.new-betas)**2)

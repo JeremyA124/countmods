@@ -21,7 +21,6 @@ glm_negb_zero <- function(data,
   alphas <- matrix(0, nrow=ncol(X.logit), ncol=1)
   pred.means <- offset
   theta <- 1
-  check.theta <- c()
   i <- 1
   maxrep=1000
   repeat{
@@ -63,7 +62,6 @@ glm_negb_zero <- function(data,
       std.error.log <- sqrt(diag(solve(tXWX.logit)))
       break
     }else{
-      check.theta[i] <- theta
       if(i == maxrep){
         std.error.negb <- sqrt(diag(solve(tXWX.negb)))
         std.error.log <- sqrt(diag(solve(tXWX.logit)))
@@ -126,7 +124,7 @@ glm_negb_zero <- function(data,
                     call = match.call(),
                     terms = list(count=terms(formula.negb),
                                  zero=terms(formula.log)),
-                    model = list(count=list(y=y, x=X.negb)),
+                    model = list(y=y, x=X.negb),
                     theta = theta))
   names(fit.dat$coefficients$count) <- colnames(X.negb)
   names(fit.dat$coefficients$zero) <- colnames(X.logit)

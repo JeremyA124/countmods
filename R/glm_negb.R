@@ -31,7 +31,7 @@ glm_negb <- function(data,
                           y=y, lower=0, upper=1000)$par
     tXW <- t(X * as.vector(pred.means^2/(pred.means^2/theta+pred.means)))
     tXWX <- tXW %*% X
-    z <- eta+(y-pred.means)/(pred.means^2/theta+pred.means)
+    z <- eta+(y-pred.means)/(pred.means)
     tXWz <- tXW %*% z
     betas.new <- solve(tXWX, tXWz)
     ss <- sum((betas.new-betas)**2)
