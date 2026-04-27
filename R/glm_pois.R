@@ -7,9 +7,9 @@ glm_pois <- function(data,
 
   #Parameter initialization
   ##########################
-  par <- stats::model.frame(formula, data=data)
-  y <- stats::model.response(par)
-  X <- stats::model.matrix(formula, data=par)
+  par <- model.frame(formula, data=data)
+  y <- model.response(par)
+  X <- model.matrix(formula, data=par)
   betas <- matrix(0, nrow=ncol(X),ncol=1)
 
   #IWLS algorithm model fit
@@ -49,13 +49,13 @@ glm_pois <- function(data,
     SE <- std.error[i]
     test.stat[i] <- fit.dat$coefficients$betas[i]/SE
     if(quasi){
-      p.vals[i] <- 2*(1-stats::pt(abs(test.stat[i]), df=nrow(data)-length(betas)))
-      crit <- stats::qt(0.975, df=nrow(data)-length(betas))
+      p.vals[i] <- 2*(1-pt(abs(test.stat[i]), df=nrow(data)-length(betas)))
+      crit <- qt(0.975, df=nrow(data)-length(betas))
       asymp.CI.lower[i] <- fit.dat$coefficients$betas[i]-crit*SE
       asymp.CI.higher[i] <- fit.dat$coefficients$betas[i]+crit*SE
     } else{
-      p.vals[i] <- 2*(1-stats::pnorm(abs(test.stat[i])))
-      crit <- stats::qnorm(0.975)
+      p.vals[i] <- 2*(1-pnorm(abs(test.stat[i])))
+      crit <- qnorm(0.975)
       asymp.CI.lower[i] <- fit.dat$coefficients$betas[i]-crit*SE
       asymp.CI.higher[i] <- fit.dat$coefficients$betas[i]+crit*SE
     }

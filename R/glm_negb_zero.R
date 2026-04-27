@@ -12,11 +12,11 @@ glm_negb_zero <- function(data,
 
   #Parameter initliazations
   ##########################
-  par1 <- stats::model.frame(formula.negb, data=data)
-  par2 <- stats::model.frame(formula.log, data=data)
-  y <- stats::model.response(par1)
-  X.negb <- stats::model.matrix(formula.negb, data=par1)
-  X.logit <- stats::model.matrix(formula.log, data=par2)
+  par1 <- model.frame(formula.negb, data=data)
+  par2 <- model.frame(formula.log, data=data)
+  y <- model.response(par1)
+  X.negb <- model.matrix(formula.negb, data=par1)
+  X.logit <- model.matrix(formula.log, data=par2)
   betas <- matrix(0, nrow=ncol(X.negb), ncol=1)
   alphas <- matrix(0, nrow=ncol(X.logit), ncol=1)
   pred.means <- offset
@@ -41,7 +41,7 @@ glm_negb_zero <- function(data,
     ########################
     eta <- offset + X.negb %*% betas
     pred.means <- exp(eta)
-    theta <- stats::optim(par=theta,
+    theta <- optim(par=theta,
                           fn=theta.MLE,
                           curr.mu=pred.means,
                           weights=1-delta,
@@ -87,8 +87,8 @@ glm_negb_zero <- function(data,
   for(i in 1:length(fit.dat$coefficients$count)){
     SE <- std.error.negb[i]
     test.stat[i] <- fit.dat$coefficients$count[i]/SE
-    p.vals[i] <- 2*(1-stats::pnorm(abs(test.stat[i])))
-    crit <- stats::qnorm(0.975)
+    p.vals[i] <- 2*(1-pnorm(abs(test.stat[i])))
+    crit <- qnorm(0.975)
     asymp.CI.lower[i] <- fit.dat$coefficients$count[i]-crit*SE
     asymp.CI.higher[i] <- fit.dat$coefficients$count[i]+crit*SE
   }
@@ -100,8 +100,8 @@ glm_negb_zero <- function(data,
   for(i in 1:length(fit.dat$coefficients$zero)){
     SE <- std.error.log[i]
     test.stat.alpha[i] <- fit.dat$coefficients$zero[i]/SE
-    p.vals.alpha[i] <- 2*(1-stats::pnorm(abs(test.stat[i])))
-    crit <- stats::qnorm(0.975)
+    p.vals.alpha[i] <- 2*(1-pnorm(abs(test.stat[i])))
+    crit <- qnorm(0.975)
     asymp.CI.lower.alpha[i] <- fit.dat$coefficients$zero[i]-crit*SE
     asymp.CI.higher.alpha[i] <- fit.dat$coefficients$zero[i]+crit*SE
   }

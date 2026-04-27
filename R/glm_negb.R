@@ -5,16 +5,16 @@ glm_negb <- function(data,
                      offset = log(1)){
   #Parameter initliazations
   ##########################
-  par <- stats::model.frame(formula, data=data)
-  y <- stats::model.response(par)
-  X <- stats::model.matrix(formula, data=par)
+  par <- model.frame(formula, data=data)
+  y <- model.response(par)
+  X <- model.matrix(formula, data=par)
   betas <- matrix(0, nrow=ncol(X),ncol=1)
   theta <- 1
 
   #MLE estimation of theta
   ##########################
   theta.MLE <- function(par, curr.mu, y, neg=F){
-    ll <- sum(log(stats::dnbinom(y, size=par, mu=curr.mu)))
+    ll <- sum(log(dnbinom(y, size=par, mu=curr.mu)))
     return(ifelse(neg, -ll, ll))
   }
 
@@ -23,12 +23,12 @@ glm_negb <- function(data,
   repeat{
     eta <- offset + X %*% betas
     pred.means <- exp(eta)
-    theta <- stats::optim(par = theta,
-                          fn=theta.MLE,
-                          curr.mu=pred.means,
-                          method = "Brent",
-                          neg=T,
-                          y=y, lower=0, upper=1000)$par
+    theta <- optim(par = theta,
+                   fn=theta.MLE,
+                   curr.mu=pred.means,
+                   method = "Brent",
+                   neg=T,
+                   y=y, lower=0, upper=1000)$par
     tXW <- t(X * as.vector(pred.means^2/(pred.means^2/theta+pred.means)))
     tXWX <- tXW %*% X
     z <- eta+(y-pred.means)/(pred.means)
@@ -54,8 +54,8 @@ glm_negb <- function(data,
   for(i in 1:length(fit.dat$coefficients$betas)){
     SE <- std.error[i]
     test.stat[i] <- fit.dat$coefficients$betas[i]/SE
-    p.vals[i] <- 2*(1-stats::pnorm(abs(test.stat[i])))
-    crit <- stats::qnorm(0.975)
+    p.vals[i] <- 2*(1-pnorm(abs(test.stat[i])))
+    crit <- qnorm(0.975)
     asymp.CI.lower[i] <- fit.dat$coefficients$betas[i]-crit*SE
     asymp.CI.higher[i] <- fit.dat$coefficients$betas[i]+crit*SE
   }
