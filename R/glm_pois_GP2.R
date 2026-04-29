@@ -1,20 +1,19 @@
+#' @importFrom stats model.frame model.response model.matrix model.offset terms optim dpois qnorm pnorm solve
+#' @importFrom VGAM dgenpois2
+
 glm_pois_GP2 <- function(data,
                          formula){
+  require(VGAM)
 
-  dgpois <- function(y, lambda, alpha){
-    probs <- numeric(length(y))
-    comp1 <- lambda/(1+alpha*lambda)
-    comp2 <- (lambda+alpha*y)^(y-1)/factorial(y)
-    comp3 <- exp((-lambda*(1+alpha*y))/(1+alpha*lambda))
-    probs <- comp1*comp2*comp3
-    return(probs)
+  if(any(is.na(data)) | any(is.null(data))){
+    warning("NAs or Nulls in data set, NAs or Nulls ignored.")
   }
 
   alpha.MLE <- function(par,
                         y,
                         fits,
                         neg=F){
-    ll <- sum(log(dgpois(y, fits, par)))
+    ll <- sum(log(dgenpois2(y, meanpar=fits, disppar = par)))
     return(ifelse(neg, -ll, ll))
   }
 
@@ -50,8 +49,8 @@ glm_pois_GP2 <- function(data,
     ss <- sum((betas.new-betas)**2)
     betas <- betas.new
     if(ss < 1e-6){
-        std.error <- sqrt(diag(solve(tXWX)))
-        break
+      std.error <- sqrt(diag(solve(tXWX)))
+      break
     }
   }
 

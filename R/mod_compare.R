@@ -1,4 +1,8 @@
+#' @importFrom stats dpois dnbinom pchisq dchisq update formula terms model.frame model.response model.matrix model.offset
+#' @importFrom VGAM pgenpois2
+
 mod_compare <- function(mod1, mod2, print.results=T){
+  require(VGAM)
 
   if (!(class(mod1) %in% c("glm_pois", "glm_pois_zero", "glm_negb", "glm_negb_zero", "glm_pois_GP2")) |
       !(class(mod2) %in% c("glm_pois", "glm_pois_zero", "glm_negb", "glm_negb_zero", "glm_pois_GP2"))){
@@ -18,15 +22,6 @@ mod_compare <- function(mod1, mod2, print.results=T){
     pi <- as.numeric(pi)
     probs[y == 0] <- pi[y == 0] + (1 - pi[y == 0]) * (theta / (mu[y == 0] + theta))^theta
     probs[y > 0] <- (1 - pi[y > 0]) * dnbinom(y[y > 0], size = theta, mu = mu[y > 0])
-    return(probs)
-  }
-
-  dgpois <- function(y, lambda, alpha){
-    probs <- numeric(length(y))
-    comp1 <- lambda/(1+alpha*lambda)
-    comp2 <- (lambda+alpha*y)^(y-1)/factorial(y)
-    comp3 <- exp((-lambda*(1+alpha*y))/(1+alpha*lambda))
-    probs <- comp1*comp2*comp3
     return(probs)
   }
 
@@ -50,9 +45,9 @@ mod_compare <- function(mod1, mod2, print.results=T){
                                     theta = theta,
                                     pi = zeros)))
     } else if(mod.class=="glm_pois_GP2"){
-      liklihood <- sum(log(dgpois(y,
-                                  lambda = fits,
-                                  alpha = alpha)))
+      liklihood <- sum(log(pgenpois2(y,
+                                     meanpar = fits,
+                                     disppar = alpha)))
     }
 
     return(liklihood)

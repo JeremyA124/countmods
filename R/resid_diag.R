@@ -1,6 +1,12 @@
+#' @importFrom stats runif qnorm ppois pnbinom
+#' @importFrom ggplot2 ggplot geom_smooth geom_point geom_hline theme_bw labs stat_qq stat_qq_line ggtitle
+#' @importFrom patchwork `+`
+#' @importFrom VGAM pgenpois2 dgenpois2
+
 resid_diag <- function(mod){
   require(patchwork)
   require(ggplot2)
+  require(VGAM)
 
   if (!(class(mod) %in% c("glm_pois", "glm_pois_zero", "glm_negb", "glm_negb_zero", "glm_pois_GP2"))){
     stop("Model class not supported")
@@ -26,28 +32,15 @@ resid_diag <- function(mod){
     return(probs)
   }
 
-  ppoisgp2 <- function(q, lambda, alpha){
-    probs <- numeric(length(q))
-    for(j in 1:length(q)){
-      for(i in 0:q[j]){
-        comp1 <- lambda/(1+alpha*lambda)
-        comp2 <- (lambda+alpha*i)^(i-1)/factorial(i)
-        comp3 <- exp((-lambda*(1+alpha*i))/(1+alpha*lambda))
-        probs[j] <- probs[j] + comp1*comp2*comp3
-      }
-    }
-    return(probs)
-  }
-
   ris.compute <- function(mod.type, y, fits, pis=0, alpha=0){
     if(mod.type=="glm_pois"){
-      ris <- ((y-fit.vals)/sqrt(fit.vals))
+      ris <- ((y-fits)/sqrt(fits))
     } else if(mod.type=="glm_pois_zero"){
       mu <- (1-pis)*fits
       var <- sqrt(fits*(1-pis)*(1+pis*fits))
-      ris <- y-mu/var
+      ris <- (y-mu)/var
     } else{
-      ris <- y-fits/(sqrt(fits)*(1+fits*alpha))
+      ris <- (y-fits)/(sqrt(fits*(1+fits*alpha)^2))
     }
 
     return(ris^2)
@@ -55,12 +48,12 @@ resid_diag <- function(mod){
 
   disp.compute <- function(mod.type, y, fits, df, theta, pis, alpha){
     if(mod.type %in% c("glm_pois", "glm_negb")){
-      disp <- sum(((y-fits)/sqrt(fits^2/theta+fits))^2)/df
+      disp <- sum(((y-fits)^2/(fits^2/theta+fits)))/df
     } else if(mod.type %in% c("glm_pois_zero", "glm_negb_zero")){
       sigma <- sqrt((1-pis)*fits*(1+fits/theta+pis*fits))
-      disp <- sum(((y-fits)/sigma)^2)/df
+      disp <- sum(((y-fits)^2/sigma^2))/df
     } else{
-      disp <- sum((y-fits)^2/(sqrt(fits)*(1+fits*alpha)))/df
+      disp <- sum((y-fits)^2/(fits*(1+fits*alpha)^2))/df
     }
 
     return(disp)
@@ -99,8 +92,8 @@ resid_diag <- function(mod){
       ai <- pzpois(counts[i]-1, lambda = fit.vals[i], pi=pis[i])
       bi <- pzpois(counts[i], lambda = fit.vals[i], pi=pis[i])
     } else if(class(mod) == "glm_pois_GP2"){
-      ai <- ppoisgp2(counts[i]-1, lambda = fit.vals[i], alpha=alpha)
-      bi <- ppoisgp2(counts[i], lambda = fit.vals[i], alpha=alpha)
+      ai <- pgenpois2(counts[i]-1, meanpar=fit.vals[i], disppar=alpha)
+      bi <- pgenpois2(counts[i], meanpar=fit.vals[i], disppar=alpha)
     } else if(class(mod) == "glm_negb_zero"){
       ai <- pznbinom(counts[i]-1, mu = fit.vals[i], theta=mod$theta, pi=pis[i])
       bi <- pznbinom(counts[i], mu = fit.vals[i], theta=mod$theta, pi=pis[i])
@@ -120,6 +113,7 @@ resid_diag <- function(mod){
                              theta=theta,
                              pis=pis,
                              alpha=alpha)
+
   p2 <- ggplot(data=data.frame(fit.val=fit.vals,
                                rqrs=rqr)) +
     geom_hline(yintercept=0, linetype="dotted")+
