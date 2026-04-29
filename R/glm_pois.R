@@ -2,34 +2,46 @@
 
 glm_pois <- function(data,
                      formula,
-                     quasi = F){
+                     quasi = F,
+                     offset.n = NULL){
+
+  if(any(is.na(data)) | any(is.null(data))){
+    warning("NAs or Nulls in data set, NAs or Nulls ignored.")
+  }
 
   #Parameter initialization
   ##########################
   par <- model.frame(formula, data=data)
   y <- model.response(par)
   X <- model.matrix(formula, data=par)
-  offset <- as.vector(model.offset(par))
-  betas <- matrix(0, nrow=ncol(X),ncol=1)
+  betas <- matrix(0, nrow=ncol(X), ncol=1)
 
-  if(is.null(offset)){
+  if(is.null(offset.n)){
     offset <- 0
   } else{
-    offset <- log(offset)
+    offset <- log(data[[offset.n]])
   }
 
   #IWLS algorithm model fit
   ##########################
+  maxrep <- 1000
+  i=1
+  ss <- NA
   repeat{
     eta <- offset + X %*% betas
     pred.means <- exp(eta)
+    print(pred.means)
     tXW <- t(X * as.vector(pred.means))
     tXWX <- tXW %*% X
     z <- (eta)+(y-pred.means)/pred.means
     tXWz <- tXW %*% z
     betas.new <- solve(tXWX, tXWz)
+    ss.old <- ss
     ss <- sum((betas.new-betas)**2)
     betas <- betas.new
+    if(is.na(ss) | is.null(ss)| is.infinite(ss)){
+      browser()
+    }
     if(ss < 1e-6){
       disp.ratio <- sum(((y-pred.means)**2)/pred.means)/(nrow(data)-length(betas))
       if (quasi) {
@@ -38,6 +50,14 @@ glm_pois <- function(data,
         std.error <- sqrt(diag(solve(tXWX)))
       }
       break
+    } else {
+      if(i == maxrep){
+        std.error <- sqrt(diag(solve(tXWX)))
+        warning("Maximum number of iterations reached.")
+        break
+      } else {
+        i <- i+1
+      }
     }
   }
 

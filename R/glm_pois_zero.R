@@ -1,4 +1,4 @@
-#' @importFrom stats model.frame model.response model.matrix model.offset terms qnorm pnorm solve
+#' @importFrom stats model.frame model.response model.matrix model.offset terms qnorm pnorm
 
 glm_pois_zero <- function(data,
                           formula.pois,

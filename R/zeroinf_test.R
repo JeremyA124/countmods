@@ -1,3 +1,6 @@
+#' @importFrom stats rpois rnbinom
+#' @importFrom ggplot2 ggplot geom_histogram geom_vline geom_hline theme_bw labs theme
+
 zeroinf_test <- function(mod){
   if (!(class(mod) %in% c("glm_pois", "glm_pois_zero", "glm_negb", "glm_negb_zero", "glm_pois_GP2"))){
     stop("Model class not supported")

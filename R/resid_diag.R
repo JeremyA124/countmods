@@ -1,6 +1,5 @@
 #' @importFrom stats runif qnorm ppois pnbinom
 #' @importFrom ggplot2 ggplot geom_smooth geom_point geom_hline theme_bw labs stat_qq stat_qq_line ggtitle
-#' @importFrom patchwork `+`
 #' @importFrom VGAM pgenpois2 dgenpois2
 
 resid_diag <- function(mod){

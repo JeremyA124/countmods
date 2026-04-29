@@ -1,3 +1,6 @@
+#' @importFrom GGally ggpairs
+#' @importFrom ggplot2 theme_bw theme element_text scale_fill_grey scale_color_grey
+
 dat_plot <- function(data){
   require(GGally)
   require(ggplot2)

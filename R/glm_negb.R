@@ -3,6 +3,10 @@
 glm_negb <- function(data,
                      formula,
                      offset = log(1)){
+  if(any(is.na(data)) | any(is.null(data))){
+    warning("NAs or Nulls in data set, NAs or Nulls ignored.")
+  }
+
   #Parameter initliazations
   ##########################
   par <- model.frame(formula, data=data)

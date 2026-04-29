@@ -1,4 +1,4 @@
-#' @importFrom stats model.frame model.response model.matrix model.offset terms optim dnbinom qnorm pnorm solve
+#' @importFrom stats model.frame model.response model.matrix model.offset terms optim dnbinom qnorm pnorm
 
 glm_negb_zero <- function(data,
                           formula.negb,

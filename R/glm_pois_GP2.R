@@ -1,4 +1,4 @@
-#' @importFrom stats model.frame model.response model.matrix model.offset terms optim dpois qnorm pnorm solve
+#' @importFrom stats model.frame model.response model.matrix model.offset terms optim dpois qnorm pnorm
 #' @importFrom VGAM dgenpois2
 
 glm_pois_GP2 <- function(data,
