@@ -1,4 +1,3 @@
-#' @importFrom stats summary
 #' @importFrom utils head
 
 interpert <- function(mod){
