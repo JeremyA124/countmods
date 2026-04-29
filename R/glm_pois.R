@@ -1,4 +1,72 @@
+#' Generalized Linear Model: Poisson Regression
+#'
+#' \code{glm_pois} is used to fit the poisson generalized linear model, specified
+#' by \code{formula}, a symbolic representation of the linear predictor.
+#'
+#' @param data A dataframe object that contains vectors spesified by the symbolic
+#' representation of \code{formula}
+#' @param formula A symbolic represenation of the linear predictor used to fit the
+#' model
+#' @param quasi T or F if a quasi dispersion parameter is added to the model.
+#'
+#' @details
+#' A poisson generalized linear model is a statistical model that fits count-based
+#' data by utilization of an IRWLS algorithm that makes proper adjustments to \eqn{\beta}
+#' until convergence.
+#'
+#' A quasi model can also be specified by the \code{quasi} parameter which fits the
+#' standard poisson model with a dispersion parameter, \eqn{\phi}, that's added into
+#' the variance structure and subsequent computations which utilize variance.
+#' \eqn{\phi < 1} indicates under dispersion while \eqn{\phi > 1} indicates overdispersion.
+#'
+#' @returns
+#' \code{glm_pois} returns an S3 object of class \code{"glm_pois"}, it is not inherited from
+#' classes \code{"lm"} or \code{"glm"}. Functions specified for these packages will not work
+#' with a \code{"glm_pois"} object.
+#'
+#' The function \code{\link{interpret}} can be used to obtain and print a summary of
+#' results.
+#'
+#' The \code{"$"} syntax can be used to extract various useful features/information
+#' of the output values from the initial model fit. Many of the features included in
+#' the \code{"glm_pois"} object are layered in lists, any computations utlilizing these
+#' features should be unlisted first using \code{\link{unlist}}.
+#'
+#' An object of class \code{"glm_pois"} contains at least the following components:
+#'
+#' \item{coefficients}{List containing estimated coefficients and their standard errors}
+#' \item{residuals}{Working residuals computed in the final iteration of the IRWLS fit}
+#' \item{summary}{List containing statistical inference and features of model fit}
+#' \item{fitted.values}{Fitted mean values (i.e., \eqn{\lambda}) obtained by exponentiation of the linear predictor}
+#' \item{df.residual}{Degrees of freedom for residuals}
+#' \item{call}{The matched call}
+#' \item{terms}{The \code{\link{terms}} object used}
+#' \item{model}{List containing the response and design matrices}
+#' \item{dispersion}{\eqn{\phi} computed with quasi algorithm}
+#'
+#' @author
+#' Implementation of \code{glm_pois} was authored by Jeremy Artiga, with aid
+#' from William Cipolli at Colgate University.
+#'
+#' @examples
+#' ## Basic fit
+#' y <- rpois(10, 2)
+#' x1 <- rnorm(n)
+#' x2 <- rnorm(n)
+#' df <- data.frame(y=y,x1=x1, x2=x2)
+#' mod <- glm_pois(data=df, y~x1+x2)
+#'
+#' ## With quasi
+#' mod <- glm_pois(data-df, y~x1+x2, quasi=T)
+#'
+#' ##Extracting features/information
+#' interpret(mod)
+#' betas <- mod$coefficients$betas
+#' std.err <- mod$coefficients$std.error
+#' disp <- mod$dispersion
+#'
 #' @importFrom stats model.frame model.response model.matrix pnorm qnorm qt pt
+#' @export
 
 glm_pois <- function(data,
                      formula,
@@ -26,7 +94,6 @@ glm_pois <- function(data,
   ##########################
   maxrep <- 1000
   i=1
-  ss <- NA
   repeat{
     eta <- offset + X %*% betas
     pred.means <- exp(eta)
@@ -36,12 +103,8 @@ glm_pois <- function(data,
     z <- (eta)+(y-pred.means)/pred.means
     tXWz <- tXW %*% z
     betas.new <- solve(tXWX, tXWz)
-    ss.old <- ss
     ss <- sum((betas.new-betas)**2)
     betas <- betas.new
-    if(is.na(ss) | is.null(ss)| is.infinite(ss)){
-      browser()
-    }
     if(ss < 1e-6){
       disp.ratio <- sum(((y-pred.means)**2)/pred.means)/(nrow(data)-length(betas))
       if (quasi) {
