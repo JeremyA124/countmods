@@ -34,6 +34,8 @@
 #' @export
 
 zeroinf_test <- function(mod){
+  require(ggplot2)
+
   if (!(class(mod) %in% c("glm_pois", "glm_pois_zero", "glm_negb", "glm_negb_zero", "glm_pois_GP2"))){
     stop("Model class not supported")
   }

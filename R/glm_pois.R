@@ -66,7 +66,7 @@
 #' mod <- glm_pois(data=df, y~x1+x2)
 #'
 #' ## With quasi
-#' mod <- glm_pois(data=df, y~x1+x2, quasi=T)
+#' mod <- glm_pois(data=df, y~x1+x2, quasi=TRUE)
 #'
 #' ## Example with InsectSprays dataset (U.S. Department of Agriculture insecticide experiment, 1940s)
 #' data(InsectSprays)

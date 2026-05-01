@@ -44,7 +44,7 @@
 #' comp.stats <- mod_compare(mod1, mod2)
 #'
 #' ## Or as a generic function for statistics
-#' gen.stats <- mod_compare(mod1, mod1, print.results=F)
+#' gen.stats <- mod_compare(mod1, mod1, print.results=FALSE)
 #'
 #' @importFrom stats dpois dnbinom pchisq dchisq update formula terms model.frame model.response model.matrix model.offset
 #' @importFrom VGAM pgenpois2

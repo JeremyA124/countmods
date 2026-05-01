@@ -61,7 +61,7 @@
 #'
 #' @examples
 #' ## Example using biochemists dataset from pscl (Campbell & Mahon, 1974)
-#' #' utils::data(bioChemists, package = "pscl")
+#' utils::data(bioChemists, package = "pscl")
 #' mod <- glm_pois_zero(data=bioChemists, kid5~phd, kid5~phd)
 #'
 #' ## With offset

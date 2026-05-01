@@ -45,7 +45,7 @@ mod2 <- glm_negb(data=NMES1988, visits~factor(chronic)+factor(health))
 comp.stats <- mod_compare(mod1, mod2)
 
 ## Or as a generic function for statistics
-gen.stats <- mod_compare(mod1, mod1, print.results=F)
+gen.stats <- mod_compare(mod1, mod1, print.results=FALSE)
 
 }
 \references{
