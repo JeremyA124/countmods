@@ -94,7 +94,7 @@ mod_compare <- function(mod1, mod2, print.results=T){
                                     theta = theta,
                                     pi = zeros)))
     } else if(mod.class=="glm_pois_GP2"){
-      liklihood <- sum(log(pgenpois2(y,
+      liklihood <- sum(log(dgenpois2(y,
                                      meanpar = fits,
                                      disppar = alpha)))
     }
@@ -169,7 +169,7 @@ mod_compare <- function(mod1, mod2, print.results=T){
 
     mcfadden <- 1-(liklihood/null_liklihood)
 
-    return(c(round(aic,2), round(bic,2), round(mcfadden,2), round(liklihood,2)))
+    return(c(round(aic,2), round(bic,2), round(mcfadden,3), round(liklihood,2)))
 
   }
 
@@ -191,7 +191,7 @@ mod_compare <- function(mod1, mod2, print.results=T){
     cat("AIC:", mod1.stats[1], "\n")
     cat("BIC:", mod1.stats[2], "\n")
     cat("R^2 (McFadden):", mod1.stats[3], "\n")
-    cat("logLiki:", mod1.stats[4], "\n")
+    cat("Log-logLiki:", mod1.stats[4], "\n")
     cat("---------------------------\n")
     cat("Model 2:\n")
     cat("AIC:", mod2.stats[1], "\n")
