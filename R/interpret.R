@@ -36,9 +36,11 @@ interpret <- function(mod){
   cat("\n")
 
   if(class(mod) %in% c("glm_pois", "glm_negb", "glm_pois_GP2")){
+    if(is.null(mod$summary$Z)){test.stats <- mod$summary$t}
+      else{test.stats <- mod$summary$Z}
     coef.frame <- data.frame("Estimate"=(exp(mod$coefficients$betas)-1)*100,
                              "Std.error"=mod$coefficients$std.error,
-                             "Z"=mod$summary$Z,
+                             "Crit.stat"=test.stats,
                              "P-value"=mod$summary$p.val)
     coef.frame$Estimate[1] = mod$coefficients$betas[1]
 

@@ -67,7 +67,7 @@ data
 mod <- glm_pois_zero(data=bioChemists, kid5~phd, kid5~phd)
 
 ## With offset
-mod <- glm_pois_zero(data=df, kid5~art, ment~art, offsetparm="phd")
+mod <- glm_pois_zero(data=bioChemists, kid5~art, ment~art, offsetparm="phd")
 
 ##Extracting features/information
 interpret(mod)

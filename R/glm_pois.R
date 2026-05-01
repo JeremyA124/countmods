@@ -66,15 +66,12 @@
 #' mod <- glm_pois(data=df, y~x1+x2)
 #'
 #' ## With quasi
-#' mod <- glm_pois(data-df, y~x1+x2, quasi=T)
-#'
-#' # With offset
-#' mod <- glm_pois(data=df, y~x1+x2, offsetparm="x2")
+#' mod <- glm_pois(data=df, y~x1+x2, quasi=T)
 #'
 #' ## Example with InsectSprays dataset (U.S. Department of Agriculture insecticide experiment, 1940s)
 #' data(InsectSprays)
 #' utils::data(InsectSprays)
-#' mod2 <- glm_pois(data=df, count~factor(spray))
+#' mod2 <- glm_pois(data=InsectSprays, count~factor(spray))
 #'
 #' ##Extracting features/information
 #' interpret(mod)
@@ -148,11 +145,11 @@ glm_pois <- function(data,
 
   # Coefficient Pvals and Confidence Intervals
   #############################################
-  test.stat <- rep(NA, times = length(fit.dat$coefficients))
-  p.vals <- rep(NA, times = length(fit.dat$coefficients))
-  asymp.CI.lower <- rep(NA, times = length(fit.dat$coefficients))
-  asymp.CI.higher <- rep(NA, times = length(fit.dat$coefficients))
-  for(i in 1:length(fit.dat$coefficients)){
+  test.stat <- rep(NA, times = length(fit.dat$coefficients$betas))
+  p.vals <- rep(NA, times = length(fit.dat$coefficients$betas))
+  asymp.CI.lower <- rep(NA, times = length(fit.dat$coefficients$betas))
+  asymp.CI.higher <- rep(NA, times = length(fit.dat$coefficients$betas))
+  for(i in 1:length(fit.dat$coefficients$betas)){
     SE <- std.error[i]
     test.stat[i] <- fit.dat$coefficients$betas[i]/SE
     if(quasi){

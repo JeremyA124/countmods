@@ -48,6 +48,7 @@
 #'
 #' @importFrom stats dpois dnbinom pchisq dchisq update formula terms model.frame model.response model.matrix model.offset
 #' @importFrom VGAM pgenpois2
+#' @export
 
 mod_compare <- function(mod1, mod2, print.results=T){
   require(VGAM)

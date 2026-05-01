@@ -67,7 +67,7 @@ data
 mod <- glm_pois_GP2(data=warpbreaks, breaks~factor(wool)+factor(tension))
 
 ## Using an "example" offset
-off <- rpois(length(warp), 5)
+off <- rpois(nrow(warpbreaks), 5)
 warp <- cbind(warpbreaks, off)
 mod <- glm_pois_GP2(data=warp, breaks~factor(wool)+factor(tension), offsetparm="off")
 

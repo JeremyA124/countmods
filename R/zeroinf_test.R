@@ -25,7 +25,7 @@
 #' @examples
 #' ## Example using biochemists dataset from pscl (Campbell & Mahon, 1974)
 #' utils::data(bioChemists, package = "pscl")
-#' mod <- glm_pois(data=df, kid5~phd)
+#' mod <- glm_pois(data=bioChemists, kid5~phd)
 #'
 #' zeroinf_test(mod)
 #'

@@ -69,15 +69,12 @@ df <- data.frame(y=y,x1=x1, x2=x2)
 mod <- glm_pois(data=df, y~x1+x2)
 
 ## With quasi
-mod <- glm_pois(data-df, y~x1+x2, quasi=T)
-
-# With offset
-mod <- glm_pois(data=df, y~x1+x2, offsetparm="x2")
+mod <- glm_pois(data=df, y~x1+x2, quasi=T)
 
 ## Example with InsectSprays dataset (U.S. Department of Agriculture insecticide experiment, 1940s)
 data(InsectSprays)
 utils::data(InsectSprays)
-mod2 <- glm_pois(data=df, count~factor(spray))
+mod2 <- glm_pois(data=InsectSprays, count~factor(spray))
 
 ##Extracting features/information
 interpret(mod)
